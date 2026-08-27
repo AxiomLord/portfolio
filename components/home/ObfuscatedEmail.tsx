@@ -1,0 +1,45 @@
+"use client";
+
+import { profile } from "@/lib/profile.config";
+import { useCallback } from "react";
+
+const USER = "to.nicholasly";
+const DOMAIN = "gmail.com";
+
+/** Obfuscated email, not a raw mailto in SSR HTML. */
+export default function ObfuscatedEmail() {
+  const reveal = useCallback(() => {
+    window.location.href = `mailto:${USER}@${DOMAIN}`;
+  }, []);
+
+  return (
+    <button
+      type="button"
+      onClick={reveal}
+      className="font-body text-left text-sm text-ink-dim underline-offset-2 hover:text-ink hover:underline"
+    >
+      <span aria-hidden>
+        {USER}
+        <span className="text-ink-faint"> [at] </span>
+        {DOMAIN.replace(".", " [dot] ")}
+      </span>
+      <span className="sr-only">
+        Email {USER} at {DOMAIN}
+      </span>
+    </button>
+  );
+}
+
+export function ResumeLink() {
+  return (
+    <a
+      href={profile.contact.resumeUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-2 rounded-full border border-border-color bg-surface px-4 py-2 font-body text-sm font-medium text-ink transition-colors hover:border-ink-faint"
+    >
+      Download Resume
+      <span aria-hidden>↓</span>
+    </a>
+  );
+}

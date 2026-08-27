@@ -1,0 +1,32 @@
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+/out/
+/.photo-pipeline/
+
+# env files
+.env*.local
+
+# production env (committing .env.production is intentional, no secrets)
+# .env.production
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+bun-debug.log*
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# vercel
+.vercel
+
+# local tools and standalone reference workspace
+/.codex/
+/.vscode/
+/Perfect Reference/

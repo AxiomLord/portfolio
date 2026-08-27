@@ -1,0 +1,677 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ==========================================================================
+   SEMANTIC TOKEN SYSTEM
+   Our semantic vars are the source of truth. shadcn vars are mapped to them
+   so shadcn components automatically reflect our design system.
+   AccentProvider writes --accent / --accent-fg / --accent-soft at runtime.
+   Pre-paint script in layout.tsx writes the accent vars before first paint.
+   NO CSS transitions on any of these: the View Transitions API owns the visual.
+   ========================================================================== */
+
+:root {
+  /* --- Portfolio semantic tokens (LIGHT: warm-grey paper) -------------- */
+  --bg: #ece8df;
+  --surface: #f6f3ec;
+  --elevated: #e1dbce;
+  --border-color: #d3ccbd;
+  /* Sidebar sits on its own darker, cooler greige tier for canvas/sidebar/card contrast */
+  --sidebar-bg: #dcd4c4;
+  --ink: #2a2620;
+  --ink-dim: #6e6553;
+  --ink-faint: #9a917e;
+  --status: #3e7a36;
+  --punch: #c9be9f;
+  /* --accent / --accent-fg / --accent-soft are written by AccentProvider
+     (and pre-paint script). Fallbacks below match THEME_DEFAULTS.lightAccent */
+  --accent: #b85423;
+  --accent-fg: #ffffff;
+  --accent-soft: rgba(184, 84, 35, 0.14);
+
+  /* --- shadcn vars mapped to our semantic tokens ------------------------- */
+  --background: var(--bg);
+  --foreground: var(--ink);
+  --card: var(--elevated);
+  --card-foreground: var(--ink);
+  --popover: var(--elevated);
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: var(--bg);
+  --secondary: var(--surface);
+  --secondary-foreground: var(--ink);
+  --muted: var(--surface);
+  --muted-foreground: var(--ink-dim);
+  /* shadcn --accent = our portfolio accent (bold color, not a muted hover) */
+  --accent: var(--accent);
+  --accent-foreground: var(--accent-fg);
+  --destructive: #dc2626;
+  --border: var(--border-color);
+  --input: var(--border-color);
+  --ring: var(--accent);
+  --radius: 0.5rem;
+
+  /* --- Motion / scene tokens -------------------------------------------- */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --scene-ink: #ece8e1;
+  --scene-surface: #0a0a0a;
+  --scene-green: #7db592;
+
+  /* sidebar (used by shadcn sidebar components) */
+  --sidebar: var(--surface);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--accent);
+  --sidebar-primary-foreground: var(--accent-fg);
+  --sidebar-accent: var(--surface);
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: var(--border-color);
+  --sidebar-ring: var(--accent);
+}
+
+.dark {
+  /* --- Portfolio semantic tokens (DARK: Vercel near-black) -------------- */
+  --bg: #0a0a0a;
+  --surface: #141414;
+  --elevated: #1c1c1c;
+  --border-color: #2a2a2a;
+  /* Raised one step above the canvas so the sidebar reads as a distinct tier */
+  --sidebar-bg: #131313;
+  --ink: #ededed;
+  --ink-dim: #8f8f8f;
+  --ink-faint: #5a5a5a;
+  --status: #3fb950;
+  --punch: #2a2a2a;
+  /* fallbacks. AccentProvider / pre-paint script override these at runtime */
+  --accent: #3b82f6;
+  --accent-fg: #ffffff;
+  --accent-soft: rgba(59, 130, 246, 0.14);
+
+  /* --- shadcn vars ------------------------------------------------------- */
+  --background: var(--bg);
+  --foreground: var(--ink);
+  --card: var(--elevated);
+  --card-foreground: var(--ink);
+  --popover: var(--elevated);
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: var(--bg);
+  --secondary: var(--surface);
+  --secondary-foreground: var(--ink);
+  --muted: var(--surface);
+  --muted-foreground: var(--ink-dim);
+  --accent: var(--accent);
+  --accent-foreground: var(--accent-fg);
+  --destructive: #f87171;
+  --border: var(--border-color);
+  --input: var(--border-color);
+  --ring: var(--accent);
+
+  /* sidebar */
+  --sidebar: var(--surface);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--accent);
+  --sidebar-primary-foreground: var(--accent-fg);
+  --sidebar-accent: var(--surface);
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: var(--border-color);
+  --sidebar-ring: var(--accent);
+}
+
+/* Thumbnail "screen": always dark regardless of page theme */
+:root,
+.dark {
+  --thumb-bg: #121316;
+  --thumb-border: rgba(255, 255, 255, 0.09);
+  --thumb-dot: rgba(255, 255, 255, 0.05);
+  --thumb-ink: #ededed;
+  --thumb-ink-dim: #a9a9ad;
+  --thumb-ink-faint: #6f6f73;
+}
+
+.dark {
+  --thumb-bg: #16171a;
+}
+
+/* ==========================================================================
+   TAILWIND @THEME INLINE
+   Maps Tailwind utility classes to our semantic CSS vars.
+   bg-bg, text-ink, text-ink-dim, border-border-color, bg-accent,
+   text-accent-fg, bg-accent-soft: all live-update when vars change.
+   ========================================================================== */
+@theme inline {
+  /* Portfolio semantic utilities */
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-elevated: var(--elevated);
+  --color-sidebar-bg: var(--sidebar-bg);
+  --color-border-color: var(--border-color);
+  --color-ink: var(--ink);
+  --color-ink-dim: var(--ink-dim);
+  --color-ink-faint: var(--ink-faint);
+  --color-status: var(--status);
+  --color-punch: var(--punch);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
+  --color-thumb-ink: var(--thumb-ink);
+  --color-thumb-ink-dim: var(--thumb-ink-dim);
+  --color-thumb-ink-faint: var(--thumb-ink-faint);
+  --color-thumb-bg: var(--thumb-bg);
+  --color-thumb-border: var(--thumb-border);
+
+  /* shadcn utilities (keep working) */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Semantic typography roles */
+  --font-display: var(--font-roboto-condensed), "Arial Narrow", sans-serif;
+  --font-body: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+  --font-landing: Georgia, "Times New Roman", serif;
+  --font-accent-dot: var(--font-dot-gothic), monospace;
+  --font-caveat: "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
+  --font-accent-hand: var(--font-caveat), cursive;
+
+  /* Semantic type scale */
+  --text-display-hero: clamp(3rem, 5.5vw, 6.5rem);
+  --text-display-hero--line-height: 1.02;
+  --text-page-title: clamp(2.5rem, 4vw, 3.25rem);
+  --text-page-title--line-height: 1.05;
+  --text-section-title: clamp(1.625rem, 2.3vw, 2rem);
+  --text-section-title--line-height: 1.15;
+  --text-card-title: 1.25rem;
+  --text-card-title--line-height: 1.25;
+  --text-lead: clamp(1.0625rem, 1.35vw, 1.125rem);
+  --text-lead--line-height: 1.6;
+  --text-body: 1rem;
+  --text-body--line-height: 1.65;
+  --text-body-sm: 0.875rem;
+  --text-body-sm--line-height: 1.55;
+  --text-label: 0.75rem;
+  --text-label--line-height: 1.2;
+  --text-metadata: 0.6875rem;
+  --text-metadata--line-height: 1.4;
+  --text-code: 0.8125rem;
+  --text-code--line-height: 1.7;
+
+  /* Radii */
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+}
+
+/* ==========================================================================
+   BASE
+   ========================================================================== */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    /* Use semantic token, which resolves to --bg via --background */
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  }
+  /* Text selection picks up the live accent (orange light / blue dark / custom) */
+  ::selection {
+    background: var(--accent-soft);
+    color: var(--ink);
+  }
+}
+
+/* ==========================================================================
+   PERFECT REFERENCE SIGNATURE INTRO
+   ========================================================================== */
+html[data-signature-intro-seen] #signature-intro {
+  display: none;
+}
+
+html.intro-running,
+html.intro-running body {
+  overflow: hidden;
+}
+
+.signature-intro {
+  isolation: isolate;
+  will-change: transform;
+}
+
+.signature-intro::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  opacity: 0.2;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+  mix-blend-mode: soft-light;
+}
+
+.signature-stage {
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 0 12px rgb(255 255 255 / 0.05));
+}
+
+#signature-intro:target [data-stroke] {
+  opacity: 1 !important;
+  stroke-dasharray: none !important;
+  stroke-dashoffset: 0 !important;
+}
+
+#signature-intro:target #writing-pen {
+  display: none;
+}
+
+body:has(#portfolio-root:target) .signature-intro {
+  display: none;
+}
+
+.portfolio-root {
+  transform-origin: center top;
+}
+
+/* ==========================================================================
+   VIEW TRANSITIONS: disable default cross-fade so WAAPI clip-path is sole visual.
+   Theme toggle uses a slant-wipe; page transitions use a circle-reveal.
+   Both animate ::view-transition-new(root); old sits underneath.
+   ========================================================================== */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* Freeze the root group when the old and new documents have different root
+   geometry. Otherwise the UA group animation tweens the root snapshot's
+   width/height for 250ms and the whole page slides while the circle opens.
+   Geometry differs when a classic scrollbar appears (landing does not scroll,
+   /home does) or when the mobile URL bar changes the viewport between
+   snapshots. Inert on overlay scrollbars (macOS): there old == new, measured.
+   It is NOT what fixed the off-origin circle reveal. That was px vs %
+   clip-path resolution, see PageTransitionOverlay.tsx.
+   DEBUG: html[data-vt-group-anim] (localStorage vtGroupAnim=1, see
+   lib/vt-debug.ts) restores the UA animation so the two can be A/B'd. */
+html:not([data-vt-group-anim])::view-transition-group(root) {
+  animation: none;
+}
+
+/* DEBUG (lib/vt-debug.ts): origin marker rides above the root snapshots so the
+   requested origin is visible while the circle grows. */
+::view-transition-group(vt-origin-marker) {
+  z-index: 2147483647;
+  animation: none;
+}
+::view-transition-new(vt-origin-marker) {
+  animation: none;
+}
+
+::view-transition-new(root) {
+  z-index: 1;
+}
+
+::view-transition-old(root) {
+  z-index: 0;
+}
+
+/* Only the photo being opened or closed is promoted out of the root snapshot.
+   Keep that shared element above the modal snapshot while its bounds morph. */
+::view-transition-group(photo-active) {
+  z-index: 2;
+  animation-duration: 480ms;
+  animation-timing-function: var(--ease-out-soft);
+}
+
+::view-transition-old(photo-active),
+::view-transition-new(photo-active) {
+  mix-blend-mode: normal;
+}
+
+/* ==========================================================================
+   CARD ↔ CASE-STUDY MORPH: tuned timing for the shared-element groups.
+   These names only exist while a morph transition is in flight.
+   ========================================================================== */
+::view-transition-group(cs-frame),
+::view-transition-group(cs-title),
+::view-transition-group(cs-no),
+::view-transition-group(cs-thumb) {
+  animation-duration: 600ms;
+  animation-timing-function: var(--ease-out-soft);
+}
+
+/* Sidebar: slides in from the left on forward nav, out on back nav. */
+::view-transition-new(cs-sidebar) {
+  animation: cs-sidebar-enter 500ms var(--ease-out-soft) forwards;
+}
+::view-transition-old(cs-sidebar) {
+  animation: cs-sidebar-leave 400ms var(--ease-out-soft) forwards;
+}
+@keyframes cs-sidebar-enter {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes cs-sidebar-leave {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+/* ==========================================================================
+   HOME SECTION SLIDE: directional vertical push between the four sections.
+   The content pane is only named while [data-slide-active] is set, so this
+   never disturbs the root circle-reveal or the cs-* morph. On mobile, the
+   sticky navbar gets its own stable shared group so it is not repainted as
+   part of both moving root snapshots.
+   Both snapshots are clipped to one viewport from the top so the push reads
+   as a clean screen swap rather than a fast scroll on tall pages.
+   ========================================================================== */
+html[data-slide-active] .home-content {
+  view-transition-name: home-content;
+  overflow: clip;
+  max-height: 100svh;
+}
+
+@media (width < 64rem) {
+  html[data-slide-active] [data-home-sidebar] {
+    view-transition-name: home-sidebar;
+  }
+
+  html[data-slide-active]::view-transition-group(home-sidebar) {
+    z-index: 2;
+    animation: none;
+  }
+
+  html[data-slide-active]::view-transition-old(home-sidebar),
+  html[data-slide-active]::view-transition-new(home-sidebar) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+}
+
+/* Active-nav accent bar: named only while sliding, so the browser tweens its
+   position old→new concurrently with the content slide. Unnamed otherwise →
+   rides the sidebar group during the card↔case-study morph. */
+html[data-slide-active] [data-toc-bar] {
+  view-transition-name: toc-active-bar;
+}
+html[data-slide-active]::view-transition-group(toc-active-bar) {
+  animation-duration: 480ms;
+  animation-timing-function: var(--ease-out-soft);
+}
+
+html[data-slide-active]::view-transition-old(home-content),
+html[data-slide-active]::view-transition-new(home-content) {
+  animation-duration: 480ms;
+  animation-timing-function: var(--ease-out-soft);
+  mix-blend-mode: normal;
+}
+html[data-slide-active]::view-transition-new(home-content) {
+  z-index: 1;
+}
+html[data-slide-active]::view-transition-old(home-content) {
+  z-index: 0;
+}
+
+/* Down the list → content slides up (new enters from below). */
+html[data-slide-dir="up"]::view-transition-old(home-content) {
+  animation-name: home-slide-old-up;
+}
+html[data-slide-dir="up"]::view-transition-new(home-content) {
+  animation-name: home-slide-new-up;
+}
+/* Up the list → content slides down (new enters from above). */
+html[data-slide-dir="down"]::view-transition-old(home-content) {
+  animation-name: home-slide-old-down;
+}
+html[data-slide-dir="down"]::view-transition-new(home-content) {
+  animation-name: home-slide-new-down;
+}
+
+@keyframes home-slide-old-up {
+  to {
+    transform: translateY(-100%);
+  }
+}
+@keyframes home-slide-new-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+@keyframes home-slide-old-down {
+  to {
+    transform: translateY(100%);
+  }
+}
+@keyframes home-slide-new-down {
+  from {
+    transform: translateY(-100%);
+  }
+}
+
+/* ==========================================================================
+   LANDING HERO  (/ : warm paper, theme-independent)
+
+   Everything expressible as a utility lives in the JSX (LandingHero.tsx,
+   FocusFrame.tsx). What stays here is what utilities express badly: the token
+   layer, the spotlight gradient, the attr()-driven semantic overlay, and the
+   reduced-motion blanket rule.
+
+   Text greys and rules come from the brand tokens (brand-theme.css, which also
+   pins the light values at .landing-hero scope). Paper, spotlight tint, accent
+   and guilloché colour are art direction: they are what the data-temperature
+   easter egg cycles, so they are owned by the presets below. "warm" is the
+   default and matches the original design.
+   ========================================================================== */
+.landing-hero {
+  --landing-ink: var(--ink);
+  --landing-muted: var(--ink-dim);
+  --landing-line: var(--border-color);
+  --landing-paper: #e9e3da;
+  --landing-light-rgb: 253, 250, 243;
+  --landing-accent: #526f5c;
+  --landing-pattern: #6f7c72;
+  --spot-x: 57%;
+  --spot-y: 45%;
+  --spot-size: 340px;
+  --frame-x: 0px;
+  --frame-y: 0px;
+  --frame-lock-y: 0px;
+  --quadrant-1: 0;
+  --quadrant-2: 0;
+  --quadrant-3: 0;
+  --quadrant-4: 0;
+}
+
+.landing-hero[data-temperature="neutral"] {
+  --landing-paper: #e7e7e4;
+  --landing-light-rgb: 250, 250, 249;
+  --landing-accent: #4f5f55;
+  --landing-pattern: #43443f;
+}
+
+.landing-hero[data-temperature="cool"] {
+  --landing-paper: #e3e7ea;
+  --landing-light-rgb: 246, 250, 253;
+  --landing-accent: #4a6a6c;
+  --landing-pattern: #3a444b;
+}
+
+.landing-spotlight {
+  background: radial-gradient(
+    circle var(--spot-size) at var(--spot-x) var(--spot-y),
+    rgba(var(--landing-light-rgb), 0.8) 0%,
+    rgba(var(--landing-light-rgb), 0.57) 36%,
+    rgba(var(--landing-light-rgb), 0.19) 62%,
+    transparent 80%
+  );
+}
+
+/* Per-character headline state. use-headline-magnetics writes --char-x/y and
+   --char-mix from one rAF loop; the defaults here mean an un-hydrated or
+   non-interactive headline renders identically to plain text. inline-block is
+   required for `translate` to apply at all. */
+.landing-char {
+  display: inline-block;
+  translate: var(--char-x, 0) var(--char-y, 0);
+  color: color-mix(
+    in oklab,
+    var(--landing-ink),
+    var(--landing-accent) calc(var(--char-mix, 0) * 100%)
+  );
+}
+
+/* The hook adds this only while the field is live, so ~60 spans are not
+   layer-promoted for the lifetime of the page. */
+.landing-headline-magnetic .landing-char {
+  will-change: translate;
+}
+
+/* Accent characters (the final word) keep their own colour. */
+.landing-char--accent {
+  color: var(--landing-accent);
+}
+
+/* DotGothic16 is monospaced, so narrow Latin glyphs sit in a full-width advance
+   and leave gaps, as in "Beaut i ful ly." Pull them in per glyph; negative tracking
+   across the whole word would collide the wide letters instead. Two tiers by
+   how much slack the glyph actually has. Inert for words without these glyphs
+   (the current accent word, "Exposed", has none), kept because the accent word
+   is copy and will change again. */
+.landing-final-word .landing-char[data-char="i"],
+.landing-final-word .landing-char[data-char="l"],
+.landing-final-word .landing-char[data-char="j"],
+.landing-final-word .landing-char[data-char="."],
+.landing-final-word .landing-char[data-char="'"] {
+  margin-inline: -0.13em;
+}
+
+.landing-final-word .landing-char[data-char="f"],
+.landing-final-word .landing-char[data-char="t"],
+.landing-final-word .landing-char[data-char="r"],
+.landing-final-word .landing-char[data-char="y"] {
+  margin-inline: -0.06em;
+}
+
+/* Magnetic drift for the CTA, written by ExploreCta. Kept here so the fallback
+   value applies before the first frame and after cleanup. */
+.landing-cta {
+  translate: var(--cta-x, 0) var(--cta-y, 0);
+}
+
+/* Semantic-layer easter egg: labels every landmark with its tag name. Needs
+   attr() for the content, so it cannot be a utility. */
+.landing-hero[data-semantic-visible][data-semantic-label],
+.landing-hero[data-semantic-visible] [data-semantic-label] {
+  outline: 1px solid color-mix(in srgb, var(--landing-accent) 72%, transparent);
+  outline-offset: -3px;
+}
+
+.landing-hero[data-semantic-visible][data-semantic-label]::after,
+.landing-hero[data-semantic-visible] [data-semantic-label]::after {
+  position: absolute;
+  top: 4px;
+  left: 5px;
+  z-index: 40;
+  padding: 1px 3px;
+  color: var(--landing-accent);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 8px;
+  line-height: 1.3;
+  content: attr(data-semantic-label);
+  background: var(--landing-paper);
+  pointer-events: none;
+}
+
+/* Motion toggle: kills every transition/animation inside the hero in one rule,
+   including ones owned by nested components. A utility cannot reach * or its
+   pseudo-elements. */
+.landing-hero[data-motion="reduced"] *,
+.landing-hero[data-motion="reduced"] *::before,
+.landing-hero[data-motion="reduced"] *::after {
+  scroll-behavior: auto !important;
+  transition-duration: 0s !important;
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+}
+
+@keyframes thumb-flip-swatch-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 transparent;
+  }
+  50% {
+    transform: scale(1.14);
+    box-shadow: 0 0 10px 2px
+      color-mix(in oklab, var(--swatch-glow) 55%, transparent);
+  }
+}
+
+/* Flip thumbnail: dark screen surface + container-query density */
+.thumb-flip {
+  container-type: inline-size;
+  container-name: thumb;
+}
+
+.thumb-screen {
+  background-color: var(--thumb-bg);
+  background-image: radial-gradient(
+    circle,
+    var(--thumb-dot) 1px,
+    transparent 1px
+  );
+  background-size: 15px 15px;
+  border: 0.5px solid var(--thumb-border);
+  border-radius: 11px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 8px 22px rgba(0, 0, 0, 0.18);
+  color: var(--thumb-ink);
+}
+
+@container thumb (max-width: 279px) {
+  .thumb-flip__secondary,
+  .thumb-flip__badge-toggle {
+    display: none;
+  }
+}
+
+.thumb-flip--compact .thumb-flip__secondary,
+.thumb-flip--compact .thumb-flip__badge-toggle {
+  display: none;
+}

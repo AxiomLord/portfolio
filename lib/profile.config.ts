@@ -21,7 +21,7 @@ export const profile = {
   },
   contact: {
     email: "to.nicholasly@gmail.com",
-    linkedin: "https://www.linkedin.com/in/nick-lee-71b258430",
+    linkedin: "https://www.linkedin.com/in/nicholas-l-b34068430",
     phone: "tel:+17135976928",
     resumeUrl: "/resume.pdf",
     resumeViewerUrl: "/resume.pdf",
